@@ -10,7 +10,6 @@ use Crell\PageTree\PageTree\PageTree;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Crell\PageTree\PageTree\Latte\PageTreeExtension;
 
 class PageTreeExtensionTest extends TestCase
 {

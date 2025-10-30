@@ -162,6 +162,7 @@ class ParserTest extends TestCase
         // We only want to check selected fields in each case, so rather than build
         // a complete expected ParsedFile object with pointless data, we just test
         // selected fields directly.
+        self::assertInstanceOf(ParsedFile::class, $parsedFile);
         self::assertEquals($filename, $parsedFile->physicalPath);
         foreach ($expected as $field => $value) {
             self::assertEquals($value, $parsedFile->$field);
@@ -197,10 +198,12 @@ class ParserTest extends TestCase
         $useDefaults = $this->parser->parseFile(new \SplFileInfo($this->routesPath . '/use-defaults.md'), LogicalPath::create('/'), $folderDef);
         $hasValues = $this->parser->parseFile(new \SplFileInfo($this->routesPath . '/has-values.md'), LogicalPath::create('/'), $folderDef);
 
+        self::assertInstanceOf(ParsedFile::class, $hasValues);
         self::assertFalse($hasValues->hidden);
         self::assertEquals('Crell', $hasValues->other['author']);
         self::assertEquals(['a', 'b', 'def', 'ault'], $hasValues->tags);
 
+        self::assertInstanceOf(ParsedFile::class, $useDefaults);
         self::assertTrue($useDefaults->hidden);
         self::assertEquals('Larry', $useDefaults->other['author']);
         self::assertEquals(['def', 'ault'], $useDefaults->tags);

@@ -4,17 +4,8 @@ declare(strict_types=1);
 
 namespace Crell\PageTree\PageTree;
 
-use Crell\PageTree\PageTree\LogicalPath;
-use Crell\PageTree\PageTree\PageData;
-use Crell\PageTree\PageTree\PageRecord;
-use Crell\PageTree\PageTree\ParsedFile;
-use Crell\PageTree\PageTree\ParsedFolder;
-use Crell\PageTree\PageTree\QueryResult;
-use Crell\PageTree\PageTree\DoctrinePageCache;
 use Crell\PageTree\SetupDoctrine;
 use Crell\PageTree\SetupFilesystem;
-use Doctrine\DBAL\Connection;
-use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
@@ -25,7 +16,6 @@ use PHPUnit\Framework\TestCase;
 class DoctrinePageCacheTest extends TestCase
 {
     use SetupFilesystem;
-//    use SetupDB;
     use SetupDoctrine;
     use MakerUtils;
 
@@ -67,6 +57,7 @@ class DoctrinePageCacheTest extends TestCase
         $cache->writeFolder($folder);
 
         $record = $this->conn->executeQuery("SELECT * FROM folder WHERE logicalPath='/foo'")->fetchAssociative();
+        self::assertIsArray($record);
         self::assertEquals((string)$folder->physicalPath, $record['physicalPath']);
     }
 
@@ -84,6 +75,7 @@ class DoctrinePageCacheTest extends TestCase
         $cache->writeFolder($newFolder);
 
         $record = $this->conn->executeQuery("SELECT * FROM folder WHERE logicalPath='/foo'")->fetchAssociative();
+        self::assertIsArray($record);
         self::assertEquals($newFolder->physicalPath, $record['physicalPath']);
         self::assertEquals($newFolder->mtime, $record['mtime']);
         self::assertEquals($newFolder->flatten, $record['flatten']);
@@ -101,6 +93,7 @@ class DoctrinePageCacheTest extends TestCase
         $cache->writeFolder($folder);
 
         $savedFolder = $cache->readFolder(LogicalPath::create('/foo'));
+        self::assertInstanceOf(ParsedFolder::class, $savedFolder);
 
         self::assertEquals((string)$folder->physicalPath, (string)$savedFolder->physicalPath);
         self::assertEquals($folder->mtime, $savedFolder->mtime);
@@ -146,6 +139,7 @@ class DoctrinePageCacheTest extends TestCase
             'pagePath' => '/foo/test',
             'dbValidation' => function (self $test) {
                 $page = $test->getPage('/foo/test');
+                self::assertIsArray($page);
                 self::assertFalse((bool)$page['hidden']);
             },
             'validation' => function (PageRecord $page) {
@@ -163,6 +157,7 @@ class DoctrinePageCacheTest extends TestCase
             'pagePath' => '/foo/test',
             'dbValidation' => function (self $test) {
                 $page = $test->getPage('/foo/test');
+                self::assertIsArray($page);
                 self::assertFalse((bool)$page['hidden']);
             },
             'validation' => function (PageRecord $page) {
@@ -217,6 +212,7 @@ class DoctrinePageCacheTest extends TestCase
             'pagePath' => '/foo/test',
             'dbValidation' => function (self $test) {
                 $page = $test->getPage('/foo/test');
+                self::assertIsArray($page);
                 $tags = json_decode($page['tags'], true, 512, JSON_THROW_ON_ERROR);
                 self::assertEquals(['a', 'b', 'c'], $tags);
             },
@@ -245,6 +241,7 @@ class DoctrinePageCacheTest extends TestCase
         $dbValidation($this);
 
         $pageRead = $cache->readPage(LogicalPath::create($pagePath));
+        self::assertInstanceOf(PageRecord::class, $pageRead);
 
         self::assertEquals('/foo/test', $pageRead->path);
         self::assertEquals('/foo', $pageRead->folder);
@@ -830,6 +827,7 @@ class DoctrinePageCacheTest extends TestCase
             ->fetchAssociative();
     }
 
+    // @phpstan-ignore-next-line method.unused (This is just for debugging, it's OK.)
     private function dumpPageTable(): void
     {
         var_dump($this->conn->executeQuery("SELECT * FROM page")->fetchAllAssociative());

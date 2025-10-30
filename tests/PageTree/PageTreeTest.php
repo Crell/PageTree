@@ -4,15 +4,8 @@ declare(strict_types=1);
 
 namespace Crell\PageTree\PageTree;
 
-use Crell\PageTree\PageTree\DoctrinePageCache;
-use Crell\PageTree\PageTree\Page;
-use Crell\PageTree\PageTree\PageRecord;
-use Crell\PageTree\PageTree\PageSet;
-use Crell\PageTree\PageTree\PageTree;
-use Crell\PageTree\PageTree\YiiDbPageCache;
 use Crell\PageTree\SetupDoctrine;
 use Crell\PageTree\SetupFilesystem;
-use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
@@ -50,6 +43,7 @@ class PageTreeTest extends TestCase
 
         $folder = $tree->folder('/subdir');
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertEquals('/subdir', $folder->logicalPath);
     }
 
@@ -66,6 +60,7 @@ class PageTreeTest extends TestCase
 
         $folder = $tree->folder('/');
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(2, iterator_to_array($folder->children(includeHidden: true)));
     }
 
@@ -81,6 +76,7 @@ class PageTreeTest extends TestCase
 
         $folder = $tree->folder('/');
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(4, iterator_to_array($folder->children(includeHidden: true)));
     }
 
@@ -96,6 +92,7 @@ class PageTreeTest extends TestCase
 
         $folder = $tree->folder('/');
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(4, iterator_to_array($folder->children(includeHidden: true)));
         foreach ($folder as $page) {
             self::assertInstanceOf(PageRecord::class, $page);
@@ -118,7 +115,8 @@ class PageTreeTest extends TestCase
 
         $folder = $tree->folder('/');
 
-        self::assertEquals('Old', $folder->get('foo')->title);
+        self::assertInstanceOf(Page::class, $folder);
+        self::assertEquals('Old', $folder->get('foo')?->title);
 
         // Update the file.
         file_put_contents($filename, '# New');
@@ -126,7 +124,8 @@ class PageTreeTest extends TestCase
 
         // The folder caches its children, so we cannot reuse the same object.
         $folder = $tree->folder('/');
-        self::assertEquals('New', $folder->get('foo')->title);
+        self::assertInstanceOf(Page::class, $folder);
+        self::assertEquals('New', $folder->get('foo')?->title);
     }
 
     #[Test, RunInSeparateProcess]
@@ -146,6 +145,7 @@ class PageTreeTest extends TestCase
 
         $folder = $tree->folder('/');
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(1, iterator_to_array($folder->children()));
 
         // Add another file to the folder.
@@ -154,8 +154,9 @@ class PageTreeTest extends TestCase
 
         // We need a new folder to ensure we get fresh data.
         $folder = $tree->folder('/');
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(2, iterator_to_array($folder->children()));
-        self::assertEquals('First', $folder->get('foo')->title);
+        self::assertEquals('First', $folder->get('foo')?->title);
     }
 
     #[Test, RunInSeparateProcess]
@@ -170,6 +171,7 @@ class PageTreeTest extends TestCase
         $folder = $tree->folder('/');
 
         // The index file in "self" should not count as a child
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(2, iterator_to_array($folder->children()));
     }
 
@@ -190,6 +192,7 @@ class PageTreeTest extends TestCase
 
         // The index file in "self" should not count as a child,
         // but the sub/index page should.
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(3, iterator_to_array($folder->children()));
     }
 
@@ -209,6 +212,7 @@ class PageTreeTest extends TestCase
 
         $folder = $tree->folder('/sub');
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(2, iterator_to_array($folder->children()));
     }
 
@@ -232,9 +236,11 @@ class PageTreeTest extends TestCase
         // Two files and the subdir, which is a mount.
         $folder = $tree->folder('/');
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(3, iterator_to_array($folder->children()));
 
         $folder = $tree->folder('/admin');
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(2, iterator_to_array($folder->children()));
     }
 
@@ -259,13 +265,16 @@ class PageTreeTest extends TestCase
         // (because adminPages is mounted to /admin/sub), so
         // the directory doesn't show.
         $folder = $tree->folder('/');
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(2, iterator_to_array($folder->children()));
 
         $folder = $tree->folder('/admin/sub');
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(2, iterator_to_array($folder->children()));
 
         // Just the subdir.
         $folder = $tree->folder('/admin');
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertCount(1, iterator_to_array($folder->children()));
     }
 
@@ -325,6 +334,7 @@ class PageTreeTest extends TestCase
         $tree->reindexAll();
 
         $page = $tree->page('/first');
+        self::assertInstanceOf(Page::class, $page);
         self::assertEquals(['first', 'page'], $page->tags);
     }
 
@@ -356,9 +366,11 @@ class PageTreeTest extends TestCase
         $tree = new PageTree($this->repo, $this->parser, $this->routesPath);
 
         $folder = $tree->folder('/');
+        self::assertInstanceOf(Folder::class, $folder);
 
         $result = $folder->filterAnyTag(['page', 'first']);
 
+        self::assertInstanceOf(Folder::class, $folder);
         self::assertPagesMatch(['First', 'Second'], $result->items);
     }
 
@@ -404,6 +416,7 @@ class PageTreeTest extends TestCase
         $tree = new PageTree($this->repo, $this->parser, $this->routesPath);
 
         $folder = $tree->folder('/');
+        self::assertInstanceOf(Folder::class, $folder);
 
         $result = $folder->filterAnyTag(['tag1'], 2, 1);
         self::assertPagesMatch(['First', 'Third'], $result->items);
@@ -543,6 +556,7 @@ class PageTreeTest extends TestCase
         $tree = new PageTree($this->repo, $this->parser, $this->routesPath);
 
         $folder = $tree->folder('/');
+        self::assertInstanceOf(Folder::class, $folder);
 
         $result = $folder->limit($limit);
 
@@ -605,6 +619,7 @@ class PageTreeTest extends TestCase
         $tree = new PageTree($this->repo, $this->parser, $this->routesPath);
 
         $folder = $tree->folder('/');
+        self::assertInstanceOf(Folder::class, $folder);
 
         $result = $folder->children(pageSize: $pageSize, pageNum: $pageNum);
 

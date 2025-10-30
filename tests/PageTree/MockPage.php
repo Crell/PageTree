@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Crell\PageTree\PageTree;
 
-use Crell\PageTree\PageTree\Page;
-use Crell\PageTree\PageTree\PhysicalPath;
 use DateTimeImmutable;
 
 class MockPage implements Page
@@ -54,6 +52,7 @@ class MockPage implements Page
      */
     public function __construct(...$values)
     {
+        // @phpstan-ignore-next-line assign.propertyType (This should always be a named args array)
         $this->values = $values;
     }
 

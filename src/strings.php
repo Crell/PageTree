@@ -53,5 +53,5 @@ function ensure_dir(string $path): string
 
     return str_contains($path, '://')
         ? $path
-        : \realpath($path);
+        : (\realpath($path) ?: $path);
 }

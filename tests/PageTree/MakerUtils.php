@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Crell\PageTree\PageTree;
 
-use Crell\PageTree\PageTree\LogicalPath;
-use Crell\PageTree\PageTree\ParsedFile;
-use Crell\PageTree\PageTree\ParsedFolder;
 use Crell\PageTree\PageTree\Parser\Parser;
-use Crell\PageTree\PageTree\PhysicalPath;
 
 trait MakerUtils
 {

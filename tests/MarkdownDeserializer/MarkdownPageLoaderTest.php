@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Crell\PageTree\MarkdownDeserializer;
 
-use Crell\PageTree\MarkdownDeserializer\MarkdownPage;
-use Crell\PageTree\MarkdownDeserializer\MarkdownPageLoader;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\Attributes\DataProvider;

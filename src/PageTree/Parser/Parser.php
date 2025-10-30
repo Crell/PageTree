@@ -6,7 +6,6 @@ namespace Crell\PageTree\PageTree\Parser;
 
 use Crell\PageTree\PageTree\LogicalPath;
 use Crell\PageTree\PageTree\PageCache;
-use Crell\PageTree\PageTree\YiiDbPageCache;
 use Crell\PageTree\PageTree\ParsedFile;
 use Crell\PageTree\PageTree\ParsedFolder;
 use Crell\PageTree\PageTree\PhysicalPath;
