@@ -1,8 +1,8 @@
 parameters:
-	level: 8
-	paths:
-		- src
-		- tests
+    level: 8
+    paths:
+        - src
+        - tests
     tmpDir: build/phpstan
     resultCachePath: %currentWorkingDirectory%/build/phpstan/resultCache.php
     ignoreErrors:
