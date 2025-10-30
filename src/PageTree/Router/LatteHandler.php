@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Crell\PageTree\PageTree\Router;
+
+use Crell\PageTree\PageTree\Page;
+use Crell\PageTree\PageTree\PhysicalPath;
+use Crell\PageTree\Router\RouteResult;
+use Crell\PageTree\Router\RouteSuccess;
+use Crell\PageTree\Services\ResponseBuilder;
+use Crell\PageTree\Services\TemplateRenderer;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+class LatteHandler implements PageHandler
+{
+    public private(set) array $supportedMethods = ['GET'];
+    public private(set) array $supportedExtensions = ['latte'];
+
+    public function __construct(
+        private readonly ResponseBuilder $builder,
+        private readonly TemplateRenderer $renderer,
+    ) {}
+
+    public function handle(ServerRequestInterface $request, Page $page, string $ext): ?RouteResult
+    {
+        return new RouteSuccess(
+            action: $this->action(...),
+            method: 'GET',
+            vars: [
+                'file' => $page->variant($ext)->physicalPath,
+                'page' => $page,
+                'query' =>  $request->getQueryParams(),
+            ],
+        );
+    }
+
+    public function action(ServerRequestInterface $request, PhysicalPath $file, Page $page, array $query): ResponseInterface
+    {
+        return $this->builder->handleCacheableFileRequest($request, (string)$file, function () use ($file, $query, $page) {
+            $result = $this->renderer->render((string)$file, [
+                'query' => new HttpQuery($query),
+                'currentPage' => $page,
+            ]);
+            return $this->builder->ok($result->content, $result->contentType);
+        });
+    }
+}
