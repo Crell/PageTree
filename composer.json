@@ -27,10 +27,6 @@
         "yiisoft/db-sqlite": "^1.2",
         "yiisoft/cache-file": "^3.1"
     },
-    "suggest": {
-        "yiisoft/db-sqlite": "One cache implementation",
-        "yiisoft/cache-file": "Needed for Yii DB"
-    },
     "autoload": {
         "psr-4": {
             "Crell\\PageTree\\": "src"
